@@ -6,6 +6,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { TreeItemComponent } from './tree-item/tree-item.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
+import { TreeControlService } from './tree-control.service';
+
 
 @NgModule({
   declarations: [
@@ -18,7 +20,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
     ReactiveFormsModule,
     BrowserAnimationsModule
   ],
-  providers: [],
+  providers: [TreeControlService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

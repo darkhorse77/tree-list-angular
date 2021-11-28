@@ -1,0 +1,8 @@
+.tree-node {
+    padding-left: 20px;
+}
+
+.tree-node input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+}

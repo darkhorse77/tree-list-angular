@@ -1,57 +1,34 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output } from '@angular/core';
 import { TreeItem } from '../entities/tree-item';
+import { TreeControlService } from '../tree-control.service';
 
 @Component({
   selector: 'app-tree-item',
   templateUrl: './tree-item.component.html',
   styleUrls: ['./tree-item.component.css']
 })
-export class TreeItemComponent implements OnInit {
+export class TreeItemComponent implements OnDestroy, OnInit {
 
-  @Output() onChildChanged = new EventEmitter<boolean>();
+  @Input() item: TreeItem;
 
-  @Input() onParentChanged: Observable<TreeItem>;
+  public childs: TreeItem[] = [];
 
-  parentChanged: Subject<TreeItem> = new Subject<TreeItem>();
+  public itemIndeterminate: boolean = false;
 
-
-
-  @Input() item;
-
-  indeterminate: boolean = false;
+  constructor(private treeControl: TreeControlService) { }
 
   ngOnInit() {
-    this.onChildChanged.emit(true);
+    this.childs = this.treeControl.data.filter(x => x.parentId == this.item.id)
+    this.treeControl.dataChange.subscribe(x => {
+      this.itemIndeterminate = this.childs.filter(x => x.checked).length > 0 && this.childs.filter(x => !x.checked).length > 0;
+    })
   }
 
-  onCheckboxChangedEvent() {
-    this.onChildChanged.emit(true);
-    this.parentChanged.next(this.item);
-    if(this.item.checked && this.item.childs.length) {
-      this.item.childs.map(x => x.checked = true)
-    } else if (!this.item.checked && this.item.childs.length) {
-      this.item.childs.map(x => x.checked = false)
-    }
+  onCheckboxChangedEvent(item) {
+    this.treeControl.updateNode(item)
   }
 
-  onChildChangedEvent(event) {
-    if (!this.item.childs.find(x => x.checked == true)) {
-      this.item.checked = false;
-      this.indeterminate = false;
-    }
-    if (!this.item.childs.find(x => x.checked == false)) {
-      this.item.checked = true;
-      this.indeterminate = false;
-    }
-    if(this.item.childs.filter(x => !x.checked).length > 0 && this.item.childs.filter(x => x.checked).length > 0) {
-      this.item.checked = false;
-      this.indeterminate = true;
-    }
-    this.parentChanged.next(this.item);
-  }
-
-  onParentChangedEvent(value) {
-    console.log(value);
+  ngOnDestroy() {
+    this.treeControl.dataChange.unsubscribe();
   }
 }

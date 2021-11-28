@@ -1,0 +1,7 @@
+<div style="margin-left: 10px;">
+    <input type="checkbox" [(ngModel)]="item.checked" [indeterminate]="indeterminate" (change)="onCheckboxChangedEvent()">
+    {{item.name}}
+    <div *ngFor="let child of item.childs">
+        <app-tree-item [item]="child" (onChanged)="onChildChangedEvent($event)" [onParentChanged]="parentChanged.asObservable(item)" ></app-tree-item>
+    </div>
+</div>
